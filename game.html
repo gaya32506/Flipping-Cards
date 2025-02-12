@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Flipping Cards Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+        .board {
+            display: grid;
+            grid-template-columns: repeat(4, 100px);
+            grid-template-rows: repeat(4, 100px);
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .card {
+            width: 100px;
+            height: 100px;
+            background-color: skyblue;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: transparent;
+            font-size: 24px;
+            cursor: pointer;
+            border-radius: 8px;
+            position: relative;
+        }
+
+        .card.flipped {
+            color: white;
+            background-color: pink;
+        }
+
+        .card.matched {
+            background-color: #ff9800;
+            color: white;
+        }
+
+        .card:active {
+            background-color:pink;
+        }
+    </style>
+</head>
+<body>
+    <h1>Flipping Cards Game</h1>
+    <div id="game-board" class="board"></div> 
+    <script>
+        const board = document.getElementById('game-board');
+        let cardValues = ['rose', 'lilly', 'jasmine', 'marigold', 'hibiscus', 'lotus', 'tulip', 'daisy'];
+        cardValues = [...cardValues, ...cardValues];
+        cardValues.sort(() => Math.random() - 0.5);
+
+        let flippedCards = [];
+        let matchedCards = 0;
+
+        function createCard(value, index) {
+            const card = document.createElement('div');
+            card.classList.add('card');
+            card.dataset.index = index;
+            card.dataset.value = value;
+            card.addEventListener('click', flipCard);
+            board.appendChild(card);
+        }
+
+        function flipCard() {
+            if (flippedCards.length === 2 || this.classList.contains('flipped') || this.classList.contains('matched')) return;
+
+            this.classList.add('flipped');
+            this.textContent = this.dataset.value;
+            flippedCards.push(this);
+
+            if (flippedCards.length === 2) {
+                checkMatch();
+            }
+        }
+
+        function checkMatch() {
+            if (flippedCards[0].dataset.value === flippedCards[1].dataset.value) {
+                flippedCards[0].classList.add('matched');
+                flippedCards[1].classList.add('matched');
+                matchedCards += 2;
+                flippedCards = [];
+                if (matchedCards === cardValues.length) {
+                    alert('You won!');
+                }
+            } else {
+                setTimeout(() => {
+                    flippedCards[0].classList.remove('flipped');
+                    flippedCards[1].classList.remove('flipped');
+                    flippedCards[0].textContent = '';
+                    flippedCards[1].textContent = '';
+                    flippedCards = [];
+                }, 1000);
+            }
+        }
+
+        cardValues.forEach((value, index) => createCard(value, index));
+    </script>
+</body>
+</html>
